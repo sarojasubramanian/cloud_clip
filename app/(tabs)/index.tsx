@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Clipboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
@@ -6,16 +6,21 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { collection, getDocs } from "firebase/firestore"; 
 import {db} from '../../firebaseConfig';
+import { useNavigation } from 'expo-router';
+import { AuthContext } from '@/auth/AuthContext';
 
 export default function Homepage() {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
   const [device, setDevice] = useState("ASUS Rog");
-  const [data, setData] = useState("windows is best");
-  const [user, setUser] = useState("siv19");
+  // const [user, setUser] = useState("siv19");
+  const [data, setData] = useState("In the realm of operating systems, Windows has long been a dominant player, offering a broad range of functionalities and user-friendly features that cater to a diverse audience. With its rich graphical user interface, extensive support for software applications, and robust security features, Windows provides a versatile environment for both personal and professional use. Over the years, it has evolved through numerous versions, each bringing enhancements in performance, usability, and integration with modern technologies. From its early days to the latest updates, Windows has consistently strived to balance innovation with stability, making it a preferred choice for many users around the world. Whether it’s for gaming, productivity, or everyday tasks, the adaptability and wide compatibility of Windows continue to solidify its position as a leading operating system in the industry.");
   const [dbData, setDbData] = useState<any[]>([]); // Define the type for the state
 
+  const { user } = useContext(AuthContext); // Use AuthContext to get the user
+  // const navigation = useNavigation();
+  
   const handleShare = (device: string, text: string) => {
     setData(text);
     setDevice(device);
@@ -29,22 +34,24 @@ export default function Homepage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const arrayData:any[] = [];
-        const querySnapshot = await getDocs(collection(db, "devices"));
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          if(data.userId == user){
-            arrayData.push({
-              device: data.name,
-              copiedText: data.latestText,
-              id: generateRandomKey()
-            })
-          }
-        });
-        setDbData(arrayData);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
+      if (user) {
+        try {
+          const arrayData: any[] = [];
+          const querySnapshot = await getDocs(collection(db, "devices"));
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.userId === user.uid) { // Use user.uid for comparison
+              arrayData.push({
+                device: data.name,
+                copiedText: data.latestText,
+                id: generateRandomKey()
+              });
+            }
+          });
+          setDbData(arrayData);
+        } catch (error) {
+          console.error("Error fetching data: ", error);
+        }
       }
     };
     fetchData();

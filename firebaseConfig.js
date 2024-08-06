@@ -1,19 +1,20 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from "firebase/firestore";
-
-// Initialize Firebase
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'api-key',
-  authDomain: 'project-id.firebaseapp.com',
-  databaseURL: 'https://project-id.firebaseio.com',
-  projectId: 'project-id',
-  storageBucket: 'project-id.appspot.com',
-  messagingSenderId: 'sender-id',
-  appId: 'app-id',
+  apiKey: "AIzaSyCLz2cD3T_LLmKNZr8I9y9eGL2bcn4Cc14",
+  authDomain: "cloud-clip-d169d.firebaseapp.com",
+  projectId: "cloud-clip-d169d",
+  storageBucket: "cloud-clip-d169d.appspot.com",
+  messagingSenderId: "233163298991",
+  appId: "1:233163298991:web:fa8764c35933ca02409c5a"
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export {app,db};
+
+export { app, db, auth };
